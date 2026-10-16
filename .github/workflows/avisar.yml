@@ -1,0 +1,30 @@
+name: Avisar ventas de Impact
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      prueba:
+        description: "Mandar aviso de prueba"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency: avisar
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 avisar.py ${{ inputs.prueba && '--prueba' || '' }}
+        env:
+          IMPACT_SID: ${{ secrets.IMPACT_SID }}
+          IMPACT_TOKEN: ${{ secrets.IMPACT_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      - name: Guardar ventas vistas
+        run: |
+          git config user.name "revisor-ventas"
+          git config user.email "actions@github.com"
+          git add vistos.json
+          git diff --cached --quiet || (git commit -m "Ventas revisadas" && git push)
