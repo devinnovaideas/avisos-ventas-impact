@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 SID, TOKEN, TOPIC = os.environ["IMPACT_SID"], os.environ["IMPACT_TOKEN"], os.environ["NTFY_TOPIC"]
 VISTOS = "vistos.json"
 
-def avisar(titulo, texto, tags="moneybag", prioridad="high"):
+def avisar(titulo, texto, tags="moneybag", prioridad="urgent"):
     q = urllib.parse.urlencode({"title": titulo, "tags": tags, "priority": prioridad,
                                 "click": "https://app.impact.com/secure/mediapartner/report/viewReport.report?handle=partner_performance_by_program"})
     urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{TOPIC}?{q}", data=texto.encode(), method="POST"), timeout=30).read()
