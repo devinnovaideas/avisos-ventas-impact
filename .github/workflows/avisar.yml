@@ -22,6 +22,7 @@ jobs:
           IMPACT_SID: ${{ secrets.IMPACT_SID }}
           IMPACT_TOKEN: ${{ secrets.IMPACT_TOKEN }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          AVISO_EMAIL: ${{ secrets.AVISO_EMAIL }}
       - name: Guardar ventas vistas
         run: |
           git config user.name "revisor-ventas"

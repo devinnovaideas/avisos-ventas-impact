@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 # Revisa las ventas nuevas en Impact y manda un aviso al iPhone (app ntfy).
-# Corre en GitHub Actions cada 30 min. Datos privados en Secrets: IMPACT_SID, IMPACT_TOKEN, NTFY_TOPIC.
+# Corre en GitHub Actions cada 30 min. Datos privados en Secrets: IMPACT_SID, IMPACT_TOKEN, NTFY_TOPIC y AVISO_EMAIL
+# (ntfy también reenvía cada aviso a ese correo, porque en el iPhone las notificaciones de la app dejaron de salir).
 import base64, json, os, sys, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
 
 SID, TOKEN, TOPIC = os.environ["IMPACT_SID"], os.environ["IMPACT_TOKEN"], os.environ["NTFY_TOPIC"]
+EMAIL = os.environ.get("AVISO_EMAIL", "")
 VISTOS = "vistos.json"
 
 def avisar(titulo, texto, tags="moneybag", prioridad="urgent"):
-    q = urllib.parse.urlencode({"title": titulo, "tags": tags, "priority": prioridad,
-                                "click": "https://app.impact.com/secure/mediapartner/report/viewReport.report?handle=partner_performance_by_program"})
+    p = {"title": titulo, "tags": tags, "priority": prioridad,
+         "click": "https://app.impact.com/secure/mediapartner/report/viewReport.report?handle=partner_performance_by_program"}
+    if EMAIL:
+        p["email"] = EMAIL
+    q = urllib.parse.urlencode(p)
     urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{TOPIC}?{q}", data=texto.encode(), method="POST"), timeout=30).read()
 
 if "--prueba" in sys.argv:
