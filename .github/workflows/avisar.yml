@@ -22,10 +22,10 @@ jobs:
           IMPACT_SID: ${{ secrets.IMPACT_SID }}
           IMPACT_TOKEN: ${{ secrets.IMPACT_TOKEN }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-          AVISO_EMAIL: ${{ secrets.AVISO_EMAIL }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       - name: Guardar ventas vistas
         run: |
           git config user.name "revisor-ventas"
           git config user.email "actions@github.com"
-          git add vistos.json
+          git add vistos.json chats.json 2>/dev/null || git add vistos.json
           git diff --cached --quiet || (git commit -m "Ventas revisadas" && git push)
